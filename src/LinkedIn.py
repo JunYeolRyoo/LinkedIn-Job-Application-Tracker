@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import re
 import time
 
 class LinkedIn():
@@ -34,7 +35,7 @@ class LinkedIn():
                         try:
                             companyName= ele.find_element(By.CSS_SELECTOR,"div.entity-result__primary-subtitle.t-14.t-black.t-normal").text.strip().lower()
                             role_element = ele.find_element(By.CSS_SELECTOR, "span.entity-result__title-text.t-16 a.app-aware-link").text.strip().lower()
-                            # applied_date = ele.find_element(By.CSS_SELECTOR, "span.reusable-search-simple-insight__text.reusable-search-simple-insight__text--small").text.strip().lower()
+                            applied_date = ele.find_element(By.CSS_SELECTOR, "span.reusable-search-simple-insight__text.reusable-search-simple-insight__text--small").text.strip().lower()
                             print(applied_date)
                             if companyName not in self.appliedJobs:
                                 self.appliedJobs[companyName] = [role_element]
@@ -67,4 +68,7 @@ class LinkedIn():
             print("\nYou haven't applied to any jobs at the company {}.\n".format(companyName))
     
     def get_applied_date(self, application):
-        pass
+        ## formats:
+        ## Applied (Xmo, Xw, Xd) ago, Applied on Company Website (Xmo, Xw, Xd) ago.
+        print(re.findall(r"applied.*\b(\d+(?:d|w|mo|y)\sago)",applied_date))
+        
