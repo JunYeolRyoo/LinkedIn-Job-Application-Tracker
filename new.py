@@ -18,7 +18,6 @@ driver.get(url)
 
 dic = {}
 
-buttonClicked = False
 addedElem = 0
 first = True
 
