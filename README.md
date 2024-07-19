@@ -1,1 +1,1 @@
-# LinkedIn-Applied-Jobs
+# LinkedIn-Job-Application-Tracker
