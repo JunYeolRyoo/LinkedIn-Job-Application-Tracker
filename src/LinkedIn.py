@@ -23,6 +23,8 @@ class LinkedIn():
         self.driver.get(url)
         while True:
             if url in self.driver.current_url:   # Check if the current url is indeed "https://www.linkedin.com/my-items/saved-jobs/..."
+                if self.first:
+                    curT = time.time()
                 try:
                     if self.first:   # Implicitly wait at the first time to get list of applied jobs
                         self.driver.implicitly_wait(10)
@@ -36,7 +38,7 @@ class LinkedIn():
                             companyName= ele.find_element(By.CSS_SELECTOR,"div.entity-result__primary-subtitle.t-14.t-black.t-normal").text.strip().lower()
                             role_element = ele.find_element(By.CSS_SELECTOR, "span.entity-result__title-text.t-16 a.app-aware-link").text.strip().lower()
                             applied_date = ele.find_element(By.CSS_SELECTOR, "span.reusable-search-simple-insight__text.reusable-search-simple-insight__text--small").text.strip().lower()
-                            print(applied_date)
+                            # print(applied_date)
                             if companyName not in self.appliedJobs:
                                 self.appliedJobs[companyName] = [role_element]
                             else:
@@ -57,6 +59,9 @@ class LinkedIn():
                         
                 except Exception as e:
                     print("Error: ", e)
+        endT = time.time()
+        print(endT-curT)
+        print(self.numofJobs)
 
     def get_application_info(self, companyName):
         if companyName in self.appliedJobs:
