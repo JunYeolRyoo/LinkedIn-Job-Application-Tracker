@@ -37,14 +37,16 @@ class LinkedIn():
                     for ele in elements:
                         try:
                             companyName= ele.find_element(By.CSS_SELECTOR,"div.entity-result__primary-subtitle.t-14.t-black.t-normal").text.strip().lower()
-                            role_element = ele.find_element(By.CSS_SELECTOR, "span.entity-result__title-text.t-16 a.app-aware-link").text.strip().lower()
+                            role_element = ele.find_element(By.CSS_SELECTOR, "span.entity-result__title-text.t-16 a.app-aware-link").text.strip()
                             applied_date = self.get_applied_date(
                                 ele.find_element(By.CSS_SELECTOR, "span.reusable-search-simple-insight__text.reusable-search-simple-insight__text--small").text.strip().lower()
                                 )
+                            location = ele.find_element(By.CSS_SELECTOR,"div.entity-result__secondary-subtitle.t-14.t-normal").text.strip()
+
                             if companyName not in self.appliedJobs:
-                                self.appliedJobs[companyName] = [(role_element,applied_date)]
+                                self.appliedJobs[companyName] = [(role_element,applied_date,location)]
                             else:
-                                self.appliedJobs[companyName].append((role_element,applied_date))
+                                self.appliedJobs[companyName].append((role_element,applied_date,location))
                             self.numofJobs += 1
                         except Exception as e:
                             print("Exception in element processing: ", e)
@@ -73,8 +75,8 @@ class LinkedIn():
     def get_application_info(self, companyName):
         if companyName in self.appliedJobs:
             print("\nYou have applied to jobs at '{}' {} times.".format(companyName,len(self.appliedJobs[companyName])))
-            for i,(role,date) in enumerate(self.appliedJobs[companyName]):
-                print("{}. Applied role: {}\t Applied date: {}".format(i+1,role,date))
+            for i,(role,date,loc) in enumerate(self.appliedJobs[companyName]):
+                print("{}. Applied role: {}\t Applied date: {}\t Location: {}".format(i+1,role,date,loc))
             print()
         else:
             print("\nYou haven't applied to any jobs at the company '{}'.\n".format(companyName))
