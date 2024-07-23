@@ -20,7 +20,7 @@ class LinkedIn():
         self.exceptionOccured = False
     
     def get_updated_data(self):
-        url = "https://www.linkedin.com/my-items/saved-jobs/"
+        url = "https://www.linkedin.com/my-items/saved-jobs/?cardType=APPLIED"
         self.driver.get(url)
         while True:
             if url in self.driver.current_url:   # Check if the current url is "https://www.linkedin.com/my-items/saved-jobs/..."
