@@ -25,7 +25,7 @@ python main.py
 ```
 
 ## Usage:
-Run the program, and it will start web scraping (approximately 1.211 seconds per page).<br>
+Run the program, and it will start web scraping to scrape the application data.<br>
 ![](image/example1.gif)
 <br>
 
