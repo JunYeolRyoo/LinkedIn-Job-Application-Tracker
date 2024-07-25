@@ -32,3 +32,6 @@ Run the program, and it will start web scraping to scrape the application data.<
 Users can search their application history while applying at the same time.<br>
 ![](image/example2.gif)
 <br>
+
+Users can download their entire application data as an Excel file.<br>
+![](image/example3.gif)
