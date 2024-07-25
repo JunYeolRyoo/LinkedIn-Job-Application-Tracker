@@ -24,3 +24,6 @@ cd /path/to/repo/project
 python main.py
 ```
 
+## Usage:
+Run the program, and it will start web scraping (approximately 1.211 seconds per page).<br>
+![](image/example1.gif)
