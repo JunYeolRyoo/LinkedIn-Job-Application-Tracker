@@ -15,6 +15,7 @@ class MakeExcelFile():
         - data: An object that has an 'appliedJobs' attribute containing job application details
         """
         self.applied_jobs = data.appliedJobs
+        self.companies_name = data.companyNames
     
     def make_excel(self):
         """
@@ -51,7 +52,7 @@ class MakeExcelFile():
         try:
             for comp in self.applied_jobs:
                 ws.merge_cells(f"A{ind}:C{ind+len(self.applied_jobs[comp])-1}")
-                ws[f"A{ind}"] = comp
+                ws[f"A{ind}"] = self.companies_name[comp]
                 for detail in self.applied_jobs[comp]:
                     ws.merge_cells(f"D{ind}:E{ind}")    # Merge 2 columns
                     ws.merge_cells(f"F{ind}:I{ind}")    # Merge 4 columns
