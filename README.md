@@ -27,3 +27,8 @@ python main.py
 ## Usage:
 Run the program, and it will start web scraping (approximately 1.211 seconds per page).<br>
 ![](image/example1.gif)
+<br>
+
+Users can search their application history while applying at the same time.<br>
+![](image/example2.gif)
+<br>
