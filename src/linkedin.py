@@ -63,7 +63,6 @@ class LinkedIn():
                             # Store job details in the dictionary
                             if companyName not in self.appliedJobs:
                                 self.appliedJobs[companyName] = [(role_element,applied_date,location)]
-                                print(self.appliedJobs[companyName])
                             else:
                                 self.appliedJobs[companyName].append((role_element,applied_date,location))
                             if companyName not in self.companyNames:
