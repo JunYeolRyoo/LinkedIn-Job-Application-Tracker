@@ -69,7 +69,7 @@ class LinkedIn():
                     print("General Exception: ", e)
                     break
         endT = time.time()
-        print(endT-curT)
+        # print(endT-curT)
         self.driver.quit()   #################
 
     def get_application_info(self, companyName):
