@@ -8,6 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import re
 import time
+import pickle
+import os
 
 class LinkedIn():
     """
@@ -38,7 +40,7 @@ class LinkedIn():
         - Uses exception handling to manage errors during scraping.
         """
         url = "https://www.linkedin.com/my-items/saved-jobs/?cardType=APPLIED"
-        self.driver.get(url)
+        self.check_cookies(url,self.driver)
         while True:
             if url in self.driver.current_url:   # Check if we are on the correct page ("https://www.linkedin.com/my-items/saved-jobs/?cardType=APPLIED")
                 try:
@@ -128,3 +130,29 @@ class LinkedIn():
         else:
             for date in res[0]:
                 if len(date) != 0: return date    
+
+    def check_cookies(self,url,driver):
+        current_directory = os.getcwd() # Get the current working directory
+        driver.get(url)
+        if "linkedin_cookies.pkl" in os.listdir(current_directory):
+            try:
+                cookies = pickle.load(open("linkedin_cookies.pkl", "rb"))
+                for cookie in cookies:
+                    driver.add_cookie(cookie)
+                driver.refresh()
+            except(pickle.UnpicklingError, EOFError):
+                print("Cookies file is corrupted or empty. Need to recreate cookies.\n")
+                self.create_new_cookies(driver,url)
+        else:
+            self.create_new_cookies(driver,url)
+
+    def create_new_cookies(self, driver, url):
+        user_input = input("Would you like to create new cookies for faster future logins? Type 'Y' to create new ones: ")
+        if user_input == 'Y':
+            print("Please log in manually from the opened browser.")
+            while url not in driver.current_url: continue
+            pickle.dump(self.driver.get_cookies(), open("linkedin_cookies.pkl", "wb"))
+            print("Cookies has been created")
+            print("New cookies saved successfully.\n")
+
+        
