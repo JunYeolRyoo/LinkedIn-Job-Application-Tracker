@@ -35,3 +35,7 @@ Users can search their application history while applying at the same time.<br>
 
 Users can download their entire application data as an Excel file.<br>
 ![](image/example3.gif)
+<br>
+
+## Future Work:
+- Optimized Data Scraping with Existing Records: To enhance the efficiency of the LinkedIn Job Application Tracker, future updates will focus on reducing redundancy in the data scraping process. Currently, each execution of the program scrapes all available data from LinkedIn's "Applied Jobs" section from scratch. This approach, while thorough, is not time-efficient, especially for users who run the program frequently.
