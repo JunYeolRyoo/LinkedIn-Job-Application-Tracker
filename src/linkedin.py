@@ -39,6 +39,7 @@ class LinkedIn():
         - Handles pagination by clicking "Next" button to load more applied jobs.
         - Uses exception handling to manage errors during scraping.
         """
+        break_loop = False
         url = "https://www.linkedin.com/my-items/saved-jobs/?cardType=APPLIED"
         self.check_cookies(url,self.driver)
         while True:
@@ -61,21 +62,28 @@ class LinkedIn():
                                 ele.find_element(By.CSS_SELECTOR, "span.reusable-search-simple-insight__text.reusable-search-simple-insight__text--small").text.strip().lower()
                                 )
                             location = ele.find_element(By.CSS_SELECTOR,"div.entity-result__secondary-subtitle.t-14.t-normal").text.strip()
+                            job_link = self.get_href(ele.find_element(By.CSS_SELECTOR, "a.app-aware-link.scale-down").get_attribute('href').strip())
 
                             # Store job details in the dictionary
-                            if companyName not in self.appliedJobs:
-                                self.appliedJobs[companyName] = [(role_element,applied_date,location)]
-                            else:
-                                self.appliedJobs[companyName].append((role_element,applied_date,location))
                             if companyName not in self.companyNames:
                                 self.companyNames[companyName] = originalCompName
-                            self.numofJobs += 1
+                            if companyName not in self.appliedJobs:
+                                self.appliedJobs[companyName] = [(role_element,applied_date,location,job_link)]
+                            else:
+                                for elem in self.appliedJobs[companyName]:
+                                    if job_link == elem[3]:
+                                        break_loop = True   # Found the repetition. No need to scrape further
+                                        break
+                                else:
+                                    self.appliedJobs[companyName].append((role_element,applied_date,location,job_link))
+                            # self.numofJobs += 1
+                            if break_loop: break
                         except Exception as e:
                             print("Exception in element processing: ", e)
                             self.exceptionOccured = True
                             break
                     try:
-                        if self.exceptionOccured:
+                        if self.exceptionOccured or break_loop:
                             break
                         # Click the "Next" button to load more jobs
                         button = WebDriverWait(self.driver, 10).until(
@@ -104,8 +112,8 @@ class LinkedIn():
         companyName = userInp.lower()
         if companyName in self.appliedJobs:
             print("\nYou have applied to jobs at '{}' {} times.".format(self.companyNames[companyName],len(self.appliedJobs[companyName])))
-            for i,(role,date,loc) in enumerate(self.appliedJobs[companyName]):
-                print("{}. Applied role: {}\t Applied time: {}\t Location: {}".format(i+1,role,date,loc))
+            for i,(role,date,loc,link) in enumerate(self.appliedJobs[companyName]):
+                print("{}. Applied role: {}\t Applied time: {}\t Location: {}\t Link: {}".format(i+1,role,date,loc,link))
             print()
         else:
             print("\nYou haven't applied to any jobs at the company '{}'.\n".format(userInp))
@@ -130,6 +138,9 @@ class LinkedIn():
         else:
             for date in res[0]:
                 if len(date) != 0: return date    
+    
+    def get_href(self,joblink):
+        return re.findall(r"(.*)(?:\?.*)",joblink)[0]
 
     def check_cookies(self,url,driver):
         current_directory = os.getcwd() # Get the current working directory
@@ -141,7 +152,7 @@ class LinkedIn():
                     driver.add_cookie(cookie)
                 driver.refresh()
             except(pickle.UnpicklingError, EOFError):
-                print("Cookies file is corrupted or empty. Need to recreate cookies.\n")
+                print("Cookies file is corrupted or empty. Need to recreate cookies.")
                 self.create_new_cookies(driver,url)
         else:
             self.create_new_cookies(driver,url)
@@ -155,4 +166,27 @@ class LinkedIn():
             print("Cookies has been created")
             print("New cookies saved successfully.\n")
 
-        
+    def get_applied_jobs(self):
+        return self.appliedJobs
+    
+    def get_company_names(self):
+        return self.companyNames
+    
+    def set_applied_jobs(self,data):
+        prev_comp_name = None
+        first = True
+        for applic_hist in data:
+            if first:   # To consume very first row (header)
+                first = False
+                continue
+            if applic_hist[0] == None:
+                comp_name = prev_comp_name
+            else:
+                comp_name = applic_hist[0].strip().lower()
+                prev_comp_name = comp_name
+            if comp_name not in self.appliedJobs:
+                self.appliedJobs[comp_name] = [(applic_hist[5],applic_hist[3],applic_hist[9],applic_hist[13])]
+            else:
+                self.appliedJobs[comp_name].append((applic_hist[5],applic_hist[3],applic_hist[9],applic_hist[13]))
+            if comp_name not in self.companyNames:
+                self.companyNames[comp_name] = applic_hist[0].strip()
