@@ -25,6 +25,7 @@ class LinkedIn():
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()) , options=chrome_options)
         self.companyNames = {}  # Dictionary to store company's name before parsing
         self.appliedJobs = {}   # Dictionary to store applied job details
+        self.appliedJobs_from_excel = {}    # Dictionary to store applied job details extracted from excel file
         self.numofJobs = 0      # Counter for the number of jobs processed
         self.first = True       # Flag to indicate the first visit to the page
         self.exceptionOccured = False   # Flag to indicate if an exception occurred
@@ -67,17 +68,17 @@ class LinkedIn():
                             # Store job details in the dictionary
                             if companyName not in self.companyNames:
                                 self.companyNames[companyName] = originalCompName
+
+                            if companyName in self.appliedJobs_from_excel:
+                                for comp in self.appliedJobs_from_excel[companyName]:
+                                    if job_link == comp[3]:
+                                        break_loop = True   # Found the repetition. No need to scrape further
+                                        break
+                            if break_loop: break
                             if companyName not in self.appliedJobs:
                                 self.appliedJobs[companyName] = [(role_element,applied_date,location,job_link)]
                             else:
-                                for elem in self.appliedJobs[companyName]:
-                                    if job_link == elem[3]:
-                                        break_loop = True   # Found the repetition. No need to scrape further
-                                        break
-                                else:
-                                    self.appliedJobs[companyName].append((role_element,applied_date,location,job_link))
-                            # self.numofJobs += 1
-                            if break_loop: break
+                                self.appliedJobs[companyName].append((role_element,applied_date,location,job_link))
                         except Exception as e:
                             print("Exception in element processing: ", e)
                             self.exceptionOccured = True
@@ -99,6 +100,7 @@ class LinkedIn():
                 except Exception as e:
                     print("General Exception: ", e)
                     break
+        self.merge_data()
         self.driver.quit()   # Close the browser
 
     def get_application_info(self, companyName):
@@ -113,7 +115,9 @@ class LinkedIn():
         if companyName in self.appliedJobs:
             print("\nYou have applied to jobs at '{}' {} times.".format(self.companyNames[companyName],len(self.appliedJobs[companyName])))
             for i,(role,date,loc,link) in enumerate(self.appliedJobs[companyName]):
-                print("{}. Applied role: {}\t Applied time: {}\t Location: {}\t Link: {}".format(i+1,role,date,loc,link))
+                if date == None: date = "" 
+                # print("{}. Applied role: {}\t Applied time: {}\t Location: {}\t Link: {}".format(i+1,role,date,loc,link))
+                print("{:3}. Applied role: {:60} Applied time: {:10} Location: {:40} Link: {}".format(i+1, role, date, loc, link))
             print()
         else:
             print("\nYou haven't applied to any jobs at the company '{}'.\n".format(userInp))
@@ -184,9 +188,19 @@ class LinkedIn():
             else:
                 comp_name = applic_hist[0].strip().lower()
                 prev_comp_name = comp_name
-            if comp_name not in self.appliedJobs:
-                self.appliedJobs[comp_name] = [(applic_hist[5],applic_hist[3],applic_hist[9],applic_hist[13])]
+            if comp_name not in self.appliedJobs_from_excel:
+                self.appliedJobs_from_excel[comp_name] = [(applic_hist[5],applic_hist[3],applic_hist[9],applic_hist[13])]
             else:
-                self.appliedJobs[comp_name].append((applic_hist[5],applic_hist[3],applic_hist[9],applic_hist[13]))
+                self.appliedJobs_from_excel[comp_name].append((applic_hist[5],applic_hist[3],applic_hist[9],applic_hist[13]))
             if comp_name not in self.companyNames:
                 self.companyNames[comp_name] = applic_hist[0].strip()
+    
+    def merge_data(self):
+        """
+        Merges job application data from 'appliedJobs_from_excel' into 'appliedJobs', maintaining an ascending order of application times
+        """
+        for key in self.appliedJobs_from_excel:
+            if key in self.appliedJobs:
+                self.appliedJobs[key].extend(self.appliedJobs_from_excel[key])
+            else:
+                self.appliedJobs[key] = self.appliedJobs_from_excel[key]

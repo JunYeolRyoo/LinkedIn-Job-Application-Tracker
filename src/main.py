@@ -5,7 +5,6 @@ def main():
     linkedin = LinkedIn()
     mkfile = MakeExcelFile()
     if mkfile.check_excel_existence():
-        print("here")
         linkedin.set_applied_jobs(mkfile.load_excel())
     linkedin.get_updated_data()
     while True:
