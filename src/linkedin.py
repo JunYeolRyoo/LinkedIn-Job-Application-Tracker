@@ -116,9 +116,9 @@ class LinkedIn():
             print("\nYou have applied to jobs at '{}' {} times.".format(self.companyNames[companyName],len(self.appliedJobs[companyName])))
             for i,(role,date,loc,link) in enumerate(self.appliedJobs[companyName]):
                 if date == None: date = "" 
-                # print("{}. Applied role: {}\t Applied time: {}\t Location: {}\t Link: {}".format(i+1,role,date,loc,link))
-                print("{:3}. Applied role: {:60} Applied time: {:10} Location: {:40} Link: {}".format(i+1, role, date, loc, link))
-            print()
+                print("{}. Applied role: {}\n   Applied time: {}\n   Location: {}\n   Link: {}".format(i+1,role,date,loc,link))
+                # print("{:3}. Applied role: {:60} Applied time: {:10} Location: {:40} Link: {}".format(i+1, role, date, loc, link))
+                print()
         else:
             print("\nYou haven't applied to any jobs at the company '{}'.\n".format(userInp))
     
