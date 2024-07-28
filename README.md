@@ -30,11 +30,13 @@ Run the program, and it will start web scraping to scrape the application data.<
 <br>
 
 Users can search their application history while applying at the same time.<br>
+![](image/example2.gif)
 <br>
 
 Users can download their entire application data as an Excel file.<br>
 ![](image/example3.gif)
 <br>
 
-## Future Work:
-- Optimized Data Scraping with Existing Records: To enhance the efficiency of the LinkedIn Job Application Tracker, future updates will focus on reducing redundancy in the data scraping process. Currently, each execution of the program scrapes all available data from LinkedIn's "Applied Jobs" section from scratch. This approach, while thorough, is not time-efficient, especially for users who run the program frequently.
+If a file named 'job_applications.xlsx' is present, the program will only scrape new, unseen data. The web scraping process will terminate as soon as the program detects existing data in the file.<br>
+![](image/example4.gif)<br>
+**NOTE: To ensure the program functions as intended, do not alter the content of 'job_applications.xlsx' (e.g., deleting cells).**
